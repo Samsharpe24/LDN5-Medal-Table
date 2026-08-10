@@ -601,7 +601,7 @@
             if (colName === "Progressive Diff") return val >= 60 ? 2 : (val >= 40 ? 1 : 0);
         if (colName === "Complaints 4-16 weeks") return val <= 2 ? 2 : (val === 3 ? 1 : 0);
         if (colName === "Complaints 16-26 weeks") return val === 0 ? 2 : (val === 1 ? 1 : 0);
-        if (colName === "Complaints 6+ months") return val === 0 ? 2 : 0; // No silver for Monthly 6m+
+        if (colName === "Complaints 6+ months" || colName === "Comp 6m+") return val === 0 ? 2 : 0; 
         
         return 0;
     }
@@ -609,14 +609,14 @@
     const weeklyTargets = {
         "Inks sent": "Silver: 100, Gold: 140",
         "Calls taken": "Silver: 80, Gold: 100",
-        "Progressive Difference": "Silver: 40, Gold: 60",
+        "Progressive Diff": "Silver: 40, Gold: 60",
         "Phone CHI": "Silver: 0.7, Gold: 0.75",
         "Email CHI": "Silver: 0.55, Gold: 0.6",
         "TP Requests": "Silver: 25, Gold: 50",
-        "Response Time (BH)": "Silver: 8, Gold: 6",
-        "Complaints 4-16 weeks": "Silver: 3, Gold: 2",
-        "Complaints 16-26 weeks": "Silver: 1, Gold: 0",
-        "Complaints 6+ months": "Gold: 0"
+        "Response Time": "Silver: 8, Gold: 6",
+        "Comp 4-16w": "Silver: 3, Gold: 2",
+        "Comp 16-26w": "Silver: 1, Gold: 0",
+        "Comp 6m+": "Gold: 0"
     };
 
     function sortTable(colIndex) {
