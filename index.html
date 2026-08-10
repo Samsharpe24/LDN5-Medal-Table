@@ -164,6 +164,71 @@
         tbody tr:hover td.bg-gold, tbody tr:hover td.bg-silver, tbody tr:hover td.bg-score {
             filter: brightness(1.05);
         }
+
+        /* Tooltip Styles */
+        .header-content {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .info-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 14px;
+            height: 14px;
+            background-color: #8b949e;
+            color: #0d1117;
+            border-radius: 50%;
+            font-size: 10px;
+            font-weight: bold;
+            cursor: help;
+            position: relative;
+        }
+
+        .info-icon:hover {
+            background-color: #c9d1d9;
+        }
+
+        .info-icon .tooltip {
+            visibility: hidden;
+            width: max-content;
+            max-width: 160px;
+            background-color: #30363d;
+            color: #ffffff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 6px 10px;
+            position: absolute;
+            z-index: 100;
+            bottom: 140%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.2s;
+            font-size: 12px;
+            font-weight: normal;
+            pointer-events: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            border: 1px solid #484f58;
+        }
+
+        .info-icon .tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #484f58 transparent transparent transparent;
+        }
+
+        .info-icon:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -534,99 +599,100 @@
             if (colName === "Inks sent") return val >= 140 ? 2 : (val >= 100 ? 1 : 0);
             if (colName === "Calls taken") return val >= 100 ? 2 : (val >= 80 ? 1 : 0);
             if (colName === "Progressive Diff") return val >= 60 ? 2 : (val >= 40 ? 1 : 0);
-            if (colName === "Contribution %") return val >= 0.1 ? 2 : (val >= 0.08 ? 1 : 0);
-            if (colName === "Phone CHI") return val >= 0.75 ? 2 : (val >= 0.7 ? 1 : 0);
-            if (colName === "Email CHI") return val >= 0.6 ? 2 : (val >= 0.55 ? 1 : 0);
-            if (colName === "TP Requests") return val >= 50 ? 2 : (val >= 25 ? 1 : 0);
-            
-            if (colName === "Response Time") {
-                if (val >= 0.01 && val <= 6) return 2;
-                if (val >= 6.01 && val <= 8) return 1;
-                return 0;
-            }
-            
-            if (colName === "Comp 4-16w") return val <= 2 ? 2 : (val === 3 ? 1 : 0);
-            if (colName === "Comp 16-26w") return val === 0 ? 2 : (val === 1 ? 1 : 0);
-            if (colName === "Comp 6m+") return val === 0 ? 2 : (val === 1 ? 1 : 0);
-            
-            return 0;
+        if (colName === "Complaints 4-16 weeks") return val <= 2 ? 2 : (val === 3 ? 1 : 0);
+        if (colName === "Complaints 16-26 weeks") return val === 0 ? 2 : (val === 1 ? 1 : 0);
+        if (colName === "Complaints 6+ months") return val === 0 ? 2 : 0; // No silver for Monthly 6m+
+        
+        return 0;
+    }
+
+    const weeklyTargets = {
+        "Inks sent": "Silver: 100, Gold: 140",
+        "Calls taken": "Silver: 80, Gold: 100",
+        "Progressive Difference": "Silver: 40, Gold: 60",
+        "Phone CHI": "Silver: 0.7, Gold: 0.75",
+        "Email CHI": "Silver: 0.55, Gold: 0.6",
+        "TP Requests": "Silver: 25, Gold: 50",
+        "Response Time (BH)": "Silver: 8, Gold: 6",
+        "Complaints 4-16 weeks": "Silver: 3, Gold: 2",
+        "Complaints 16-26 weeks": "Silver: 1, Gold: 0",
+        "Complaints 6+ months": "Gold: 0"
+    };
+
+    function sortTable(colIndex) {
+        if (sortCol === colIndex) {
+            sortAsc = !sortAsc;
+        } else {
+            sortCol = colIndex;
+            sortAsc = false;
         }
+        renderTable();
+    }
 
-        function calculateMonthlyScore(val, colName) {
-            if (val === null) return 0;
-            
-            if (colName === "Inks sent") return val >= 560 ? 2 : (val >= 400 ? 1 : 0);
-            if (colName === "Calls taken") return val >= 400 ? 2 : (val >= 320 ? 1 : 0);
-            if (colName === "Progressive Diff") return val >= 240 ? 2 : (val >= 160 ? 1 : 0);
-            if (colName === "Contribution %") return val >= 0.1 ? 2 : (val >= 0.08 ? 1 : 0);
-            if (colName === "Phone CHI") return val >= 0.75 ? 2 : (val >= 0.7 ? 1 : 0);
-            if (colName === "Email CHI") return val >= 0.6 ? 2 : (val >= 0.55 ? 1 : 0);
-            if (colName === "TP Requests") return val >= 200 ? 2 : (val >= 100 ? 1 : 0);
-            
-            if (colName === "Response Time") {
-                if (val >= 0.01 && val <= 6) return 2;
-                if (val >= 6.01 && val <= 8) return 1;
-                return 0;
-            }
-            
-            if (colName === "Comp 4-16w") return val <= 2 ? 2 : (val === 3 ? 1 : 0);
-            if (colName === "Comp 16-26w") return val === 0 ? 2 : (val === 1 ? 1 : 0);
-            if (colName === "Comp 6m+") return val === 0 ? 2 : 0; // No silver for Monthly 6m+
-            
-            return 0;
-        }
+    function renderTable() {
+        const teamConfig = allData[currentTeam];
+        const headers = teamConfig.headers;
+        const dataSet = teamConfig[currentView][currentDate] || [];
 
-        function sortTable(colIndex) {
-            if (sortCol === colIndex) {
-                sortAsc = !sortAsc;
-            } else {
-                sortCol = colIndex;
-                sortAsc = false;
-            }
-            renderTable();
-        }
+        let displayData = [...dataSet];
 
-        function renderTable() {
-            const teamConfig = allData[currentTeam];
-            const headers = teamConfig.headers;
-            const dataSet = teamConfig[currentView][currentDate] || [];
-
-            let displayData = [...dataSet];
-
-            // Sorting execution
-            if (sortCol > -1) {
-                displayData.sort((a, b) => {
-                    let valA = a[sortCol];
-                    let valB = b[sortCol];
-                    
-                    let numA = parseVal(valA);
-                    let numB = parseVal(valB);
-                    
-                    if (numA !== null && numB !== null) {
-                        return sortAsc ? numA - numB : numB - numA;
-                    }
-                    return sortAsc ? String(valA).localeCompare(String(valB)) : String(valB).localeCompare(String(valA));
-                });
-            }
-
-            // Render Headers
-            const thead = document.getElementById('tableHead');
-            thead.innerHTML = '';
-            const trHead = document.createElement('tr');
-            headers.forEach((h, index) => {
-                const th = document.createElement('th');
-                th.textContent = h;
-                th.onclick = () => sortTable(index);
-                if (sortCol === index) {
-                    th.classList.add(sortAsc ? 'sort-asc' : 'sort-desc');
+        // Sorting execution
+        if (sortCol > -1) {
+            displayData.sort((a, b) => {
+                let valA = a[sortCol];
+                let valB = b[sortCol];
+                
+                let numA = parseVal(valA);
+                let numB = parseVal(valB);
+                
+                if (numA !== null && numB !== null) {
+                    return sortAsc ? numA - numB : numB - numA;
                 }
-                trHead.appendChild(th);
+                return sortAsc ? String(valA).localeCompare(String(valB)) : String(valB).localeCompare(String(valA));
             });
-            thead.appendChild(trHead);
+        }
 
-            // Render Body
-            const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = '';
+        // Render Headers
+        const thead = document.getElementById('tableHead');
+        thead.innerHTML = '';
+        const trHead = document.createElement('tr');
+        headers.forEach((h, index) => {
+            const th = document.createElement('th');
+            th.onclick = () => sortTable(index);
+            
+            const headerContent = document.createElement('div');
+            headerContent.className = 'header-content';
+            
+            const textNode = document.createElement('span');
+            textNode.textContent = h;
+            headerContent.appendChild(textNode);
+
+            if (currentView === 'weekly' && weeklyTargets[h]) {
+                const infoIcon = document.createElement('div');
+                infoIcon.className = 'info-icon';
+                infoIcon.textContent = 'i';
+                infoIcon.onclick = (e) => e.stopPropagation(); // Prevents the column from sorting when just clicking the icon
+                
+                const tooltip = document.createElement('span');
+                tooltip.className = 'tooltip';
+                tooltip.textContent = weeklyTargets[h];
+                
+                infoIcon.appendChild(tooltip);
+                headerContent.appendChild(infoIcon);
+            }
+
+            th.appendChild(headerContent);
+
+            if (sortCol === index) {
+                th.classList.add(sortAsc ? 'sort-asc' : 'sort-desc');
+            }
+            trHead.appendChild(th);
+        });
+        thead.appendChild(trHead);
+
+        // Render Body
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
 
             displayData.forEach(row => {
                 const tr = document.createElement('tr');
