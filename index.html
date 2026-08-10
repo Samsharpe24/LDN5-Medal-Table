@@ -141,7 +141,6 @@
             text-align: center;
         }
 
-        /* Highlight Colors */
         .bg-gold {
             background-color: #df9e10 !important;
             color: #000000 !important;
@@ -157,7 +156,6 @@
             color: #000000 !important;
         }
 
-        /* Hover effect for rows */
         tbody tr:hover td {
             filter: brightness(1.2);
         }
@@ -165,7 +163,6 @@
             filter: brightness(1.05);
         }
 
-        /* Tooltip Styles */
         .header-content {
             display: inline-flex;
             align-items: center;
@@ -191,18 +188,19 @@
             background-color: #c9d1d9;
         }
 
+        /* Tooltip Container - Updated to face downwards */
         .info-icon .tooltip {
             visibility: hidden;
             width: max-content;
-            max-width: 160px;
+            max-width: 180px;
             background-color: #30363d;
             color: #ffffff;
             text-align: center;
             border-radius: 6px;
-            padding: 6px 10px;
+            padding: 8px 12px;
             position: absolute;
             z-index: 100;
-            top: 140%;
+            top: 140%; /* Position below the icon */
             left: 50%;
             transform: translateX(-50%);
             opacity: 0;
@@ -212,17 +210,19 @@
             pointer-events: none;
             box-shadow: 0 4px 12px rgba(0,0,0,0.5);
             border: 1px solid #484f58;
+            line-height: 1.4;
         }
 
+        /* Tooltip Arrow - Updated for downward position */
         .info-icon .tooltip::after {
             content: "";
             position: absolute;
-            bottom: 100%;
+            bottom: 100%; /* Point arrow upwards from the tooltip box */
             left: 50%;
             margin-left: -5px;
             border-width: 5px;
             border-style: solid;
-            border-color: transparent transparent #484f58 transparent;
+            border-color: transparent transparent #30363d transparent;
         }
 
         .info-icon:hover .tooltip {
@@ -620,8 +620,8 @@
             if (colName === "Email CHI") return val >= 0.6 ? 2 : (val >= 0.55 ? 1 : 0);
             if (colName === "TP Requests") return val >= 200 ? 2 : (val >= 100 ? 1 : 0);
             if (colName === "Response Time") return val <= 6 ? 2 : (val <= 8 ? 1 : 0);
-            if (colName === "Comp 4-16w") return val <= 8 ? 2 : (val <= 12 ? 1 : 0);
-            if (colName === "Comp 16-26w") return val <= 0 ? 2 : (val <= 4 ? 1 : 0);
+            if (colName === "Comp 4-16w") return val <= 2 ? 2 : (val <= 3 ? 1 : 0);
+            if (colName === "Comp 16-26w") return val === 0 ? 2 : (val === 1 ? 1 : 0);
             if (colName === "Comp 6m+") return val === 0 ? 2 : 0; 
             
             return 0;
@@ -648,53 +648,88 @@
             "Email CHI": "Silver: 0.55, Gold: 0.6",
             "TP Requests": "Silver: 100, Gold: 200",
             "Response Time": "Silver: 8, Gold: 6",
-            "Comp 4-16w": "Silver: 12, Gold: 8",
-            "Comp 16-26w": "Silver: 4, Gold: 0",
+            "Comp 4-16w": "Silver: 3, Gold: 2",
+            "Comp 16-26w": "Silver: 1, Gold: 0",
             "Comp 6m+": "Gold: 0"
         };
 
-        function sortTable(colIndex) {
-        thead.innerHTML = '';
-        const trHead = document.createElement('tr');
-        headers.forEach((h, index) => {
-            const th = document.createElement('th');
-            th.onclick = () => sortTable(index);
-            
-            const headerContent = document.createElement('div');
-            headerContent.className = 'header-content';
-            
-            const textNode = document.createElement('span');
-            textNode.textContent = h;
-            headerContent.appendChild(textNode);
+        function renderTable() {
+            const viewData = allData[currentTeam][currentView];
+            if (!viewData || !viewData[currentDate]) return;
 
-            const activeTargets = currentView === 'weekly' ? weeklyTargets : monthlyTargets;
+            const headers = allData[currentTeam].headers;
+            let displayData = [...viewData[currentDate]];
 
-            if (activeTargets[h]) {
-                const infoIcon = document.createElement('div');
-                infoIcon.className = 'info-icon';
-                infoIcon.textContent = 'i';
-                infoIcon.onclick = (e) => e.stopPropagation(); // Prevents the column from sorting when just clicking the icon
-                
-                const tooltip = document.createElement('span');
-                tooltip.className = 'tooltip';
-                tooltip.textContent = activeTargets[h];
-                
-                infoIcon.appendChild(tooltip);
-                headerContent.appendChild(infoIcon);
+            // Handle Sorting
+            if (sortCol > -1) {
+                displayData.sort((a, b) => {
+                    let valA = parseVal(a[sortCol]);
+                    let valB = parseVal(b[sortCol]);
+                    
+                    if (valA === null && valB !== null) return 1;
+                    if (valB === null && valA !== null) return -1;
+                    if (valA === null && valB === null) return 0;
+                    
+                    if (typeof valA === 'string' && typeof valB === 'string') {
+                        return sortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+                    }
+                    
+                    return sortAsc ? (valA > valB ? 1 : -1) : (valA < valB ? 1 : -1);
+                });
             }
 
-            th.appendChild(headerContent);
+            // Render Headers with Tooltips
+            const thead = document.getElementById('tableHead');
+            thead.innerHTML = '';
+            const trHead = document.createElement('tr');
+            headers.forEach((h, index) => {
+                const th = document.createElement('th');
+                th.onclick = () => {
+                    if (sortCol === index) {
+                        sortAsc = !sortAsc;
+                    } else {
+                        sortCol = index;
+                        sortAsc = true;
+                    }
+                    renderTable();
+                };
+                
+                const headerContent = document.createElement('div');
+                headerContent.className = 'header-content';
+                
+                const textNode = document.createElement('span');
+                textNode.textContent = h;
+                headerContent.appendChild(textNode);
 
-            if (sortCol === index) {
-                th.classList.add(sortAsc ? 'sort-asc' : 'sort-desc');
-            }
-            trHead.appendChild(th);
-        });
-        thead.appendChild(trHead);
+                const activeTargets = currentView === 'weekly' ? weeklyTargets : monthlyTargets;
 
-        // Render Body
-        const tbody = document.getElementById('tableBody');
-        tbody.innerHTML = '';
+                // Add Tooltip Icon if a target text exists
+                if (activeTargets[h]) {
+                    const infoIcon = document.createElement('div');
+                    infoIcon.className = 'info-icon';
+                    infoIcon.textContent = 'i';
+                    infoIcon.onclick = (e) => e.stopPropagation();
+                    
+                    const tooltip = document.createElement('span');
+                    tooltip.className = 'tooltip';
+                    tooltip.textContent = activeTargets[h];
+                    
+                    infoIcon.appendChild(tooltip);
+                    headerContent.appendChild(infoIcon);
+                }
+
+                th.appendChild(headerContent);
+
+                if (sortCol === index) {
+                    th.classList.add(sortAsc ? 'sort-asc' : 'sort-desc');
+                }
+                trHead.appendChild(th);
+            });
+            thead.appendChild(trHead);
+
+            // Render Body
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
 
             displayData.forEach(row => {
                 const tr = document.createElement('tr');
