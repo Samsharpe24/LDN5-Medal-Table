@@ -74,6 +74,7 @@
             color: #f8fafc;
         }
 
+        /* Sort Icons */
         .sort-icon {
             display: inline-block;
             margin-left: 0.25rem;
@@ -81,6 +82,7 @@
             color: #64748b;
         }
 
+        /* Tooltip Container */
         .info-icon {
             display: inline-flex;
             align-items: center;
@@ -130,10 +132,11 @@
             opacity: 1;
         }
 
+        /* Downward Triangle pointer */
         .info-icon .tooltip::after {
             content: "";
             position: absolute;
-            bottom: 100%;
+            bottom: 100%; /* Arrow pointing UP from the top of the tooltip */
             left: 50%;
             margin-left: -5px;
             border-width: 5px;
@@ -141,11 +144,13 @@
             border-color: transparent transparent #1e293b transparent;
         }
 
+        /* Medal Colors - Adjusted to exact dark theme references */
         .gold { background-color: #facc15 !important; color: #000 !important; font-weight: 500; }
         .silver { background-color: #94a3b8 !important; color: #000 !important; font-weight: 500; }
         .score-col { background-color: #064e3b !important; color: #a7f3d0 !important; font-weight: bold; }
         .agent-name { font-weight: 500; color: #e2e8f0; }
 
+        /* Navigation Buttons */
         .nav-btn {
             background-color: #1e293b;
             color: #9ca3af;
@@ -203,6 +208,7 @@
         let sortCol = -1;
         let sortAsc = true;
 
+        // Tooltip target data
         const weeklyTargets = {
             "Inks sent": "Silver: 100\nGold: 140",
             "Calls taken": "Silver: 80\nGold: 100",
@@ -253,7 +259,7 @@
             if (colName === "Phone CHI") return val >= 0.75 ? 4 : (val >= 0.7 ? 2 : 0);
             if (colName === "Email CHI") return val >= 0.6 ? 4 : (val >= 0.55 ? 2 : 0);
             if (colName === "TP Requests") return val >= 50 ? 2 : (val >= 25 ? 1 : 0);
-            if (colName === "Response Time" || colName === "Response Time (BH)") return val <= 6 ? 2 : (val <= 8 ? 1 : 0);
+            if (colName === "Response Time" || colName === "Response Time (BH)") return (val > 0 && val <= 6) ? 2 : ((val > 0 && val <= 8) ? 1 : 0);
             if (colName === "Comp 4-16w") return val <= 2 ? 2 : (val === 3 ? 1 : 0);
             if (colName === "Comp 16-26w") return val === 0 ? 2 : (val === 1 ? 1 : 0);
             if (colName === "Comp 6m+") return val === 0 ? 2 : 0;
@@ -268,7 +274,7 @@
             if (colName === "Phone CHI") return val >= 0.75 ? 4 : (val >= 0.7 ? 2 : 0);
             if (colName === "Email CHI") return val >= 0.6 ? 4 : (val >= 0.55 ? 2 : 0);
             if (colName === "TP Requests") return val >= 200 ? 2 : (val >= 100 ? 1 : 0);
-            if (colName === "Response Time" || colName === "Response Time (BH)") return val <= 6 ? 2 : (val <= 8 ? 1 : 0);
+            if (colName === "Response Time" || colName === "Response Time (BH)") return (val > 0 && val <= 6) ? 2 : ((val > 0 && val <= 8) ? 1 : 0);
             if (colName === "Comp 4-16w") return val <= 2 ? 2 : (val === 3 ? 1 : 0);
             if (colName === "Comp 16-26w") return val === 0 ? 2 : (val === 1 ? 1 : 0);
             if (colName === "Comp 6m+") return val === 0 ? 2 : 0;
@@ -283,7 +289,7 @@
             if (colName === "Phone CHI") return val >= 0.75 ? 4 : (val >= 0.7 ? 2 : 0);
             if (colName === "Email CHI") return val >= 0.6 ? 4 : (val >= 0.55 ? 2 : 0);
             if (colName === "TP Requests") return val >= 600 ? 2 : (val >= 300 ? 1 : 0);
-            if (colName === "Response Time" || colName === "Response Time (BH)") return val <= 6 ? 2 : (val <= 8 ? 1 : 0);
+            if (colName === "Response Time" || colName === "Response Time (BH)") return (val > 0 && val <= 6) ? 2 : ((val > 0 && val <= 8) ? 1 : 0);
             if (colName === "Comp 4-16w") return val <= 2 ? 2 : (val === 3 ? 1 : 0);
             if (colName === "Comp 16-26w") return val === 0 ? 2 : (val === 1 ? 1 : 0);
             if (colName === "Comp 6m+") return val === 0 ? 2 : 0;
@@ -433,38 +439,38 @@
                 },
                 monthly: {
                     "01/07/2026": [
-                        ["Russell Thompson", "329", "139", "104.5", "1", "0.33", "4", "11.86", "1", "1", "0", "7"],
-                        ["Ben Tinslay", "624", "93", "371.5", "1", "0.33", "41", "10.29", "1", "0", "0", "8"],
-                        ["Linda Dixon", "283", "58", "-90.5", "1", "-1", "22", "8.21", "2", "0", "0", "8"],
-                        ["Inesa Mockute", "397", "137", "94", "0.75", "1", "1", "7.48", "0", "0", "0", "11"],
-                        ["Ben Fofie", "435", "71", "24.5", "1", "0.77", "13", "28.07", "4", "0", "0", "8"],
-                        ["Sophie Chorbachi", "357", "71", "193", "1", "0.8", "19", "9.25", "3", "0", "0", "9"],
-                        ["Josh Cann", "353", "192", "-28", "1", "1", "69", "24.45", "5", "0", "1", "6"],
-                        ["Lisa Nok", "541", "145", "114", "1", "0.2", "47", "8.75", "1", "0", "0", "8"],
-                        ["Koye Oludayo", "671", "378", "160", "0.22", "0.56", "24", "6.49", "4", "1", "0", "5"],
-                        ["Shakirat Aliu", "559", "232", "77.5", "1", "0.38", "57", "11.44", "2", "0", "0", "8"],
-                        ["Natalie Kociszewska", "397", "175", "88.5", "1", "0.29", "22", "17.14", "4", "0", "0", "6"],
-                        ["Zak Ghalem", "645", "302", "132", "0.75", "0.93", "143", "16.01", "3", "0", "0", "9"],
-                        ["Abir Taha", "467", "350", "24", "1", "0.33", "140", "10.24", "3", "0", "0", "7"],
-                        ["Kaygee Tekigerwa", "94", "0", "0", "0", "0", "0", "0", "3", "0", "0", "5"]
+                        ["Russell Thompson", "329", "294", "104.5", "1", "0.33", "4", "11.86", "1", "1", "0", "9"],
+                        ["Ben Tinslay", "624", "165", "371.5", "1", "0.33", "41", "10.29", "1", "0", "0", "14"],
+                        ["Linda Dixon", "283", "125", "-90.5", "1", "-1", "22", "8.21", "2", "0", "0", "10"],
+                        ["Inesa Mockute", "397", "170", "94", "0.75", "1", "1", "7.48", "0", "0", "0", "15"],
+                        ["Ben Fofie", "435", "149", "24.5", "1", "0.77", "13", "28.07", "4", "0", "0", "13"],
+                        ["Sophie Chorbachi", "357", "93", "193", "1", "0.8", "19", "9.25", "3", "0", "0", "14"],
+                        ["Josh Cann", "353", "283", "-28", "1", "1", "69", "24.45", "5", "0", "1", "10"],
+                        ["Lisa Nok", "541", "537", "114", "1", "0.2", "47", "8.75", "1", "0", "0", "13"],
+                        ["Koye Oludayo", "671", "378", "160", "0.22", "0.56", "24", "6.49", "4", "1", "0", "10"],
+                        ["Shakirat Aliu", "559", "390", "77.5", "1", "0.38", "57", "11.44", "2", "0", "0", "12"],
+                        ["Natalie Kociszewska", "397", "311", "88.5", "1", "0.29", "22", "17.14", "4", "0", "0", "8"],
+                        ["Zak Ghalem", "645", "379", "132", "0.75", "0.93", "143", "16.01", "3", "0", "0", "17"],
+                        ["Abir Taha", "476", "503", "24", "1", "0.33", "140", "10.24", "3", "0", "0", "13"],
+                        ["Kaygee Tekigerwa", "94", "23", "0", "0", "0", "0", "0", "0", "0", "0", "6"]
                     ]
                 },
                 quarterly: {
                     "01/07/2026": [
-                        ["Russell Thompson", "329", "139", "104.5", "1", "0.33", "4", "11.86", "1", "1", "0", "7"],
-                        ["Ben Tinslay", "624", "93", "371.5", "1", "0.33", "41", "10.29", "1", "0", "0", "8"],
-                        ["Linda Dixon", "283", "58", "-90.5", "1", "-1", "22", "8.21", "2", "0", "0", "8"],
-                        ["Inesa Mockute", "397", "137", "94", "0.75", "1", "1", "7.48", "0", "0", "0", "11"],
-                        ["Ben Fofie", "435", "71", "24.5", "1", "0.77", "13", "28.07", "4", "0", "0", "8"],
-                        ["Sophie Chorbachi", "357", "71", "193", "1", "0.8", "19", "9.25", "3", "0", "0", "9"],
-                        ["Josh Cann", "353", "192", "-28", "1", "1", "69", "24.45", "5", "0", "1", "6"],
-                        ["Lisa Nok", "541", "145", "114", "1", "0.2", "47", "8.75", "1", "0", "0", "8"],
-                        ["Koye Oludayo", "671", "378", "160", "0.22", "0.56", "24", "6.49", "4", "1", "0", "5"],
-                        ["Shakirat Aliu", "559", "232", "77.5", "1", "0.38", "57", "11.44", "2", "0", "0", "8"],
-                        ["Natalie Kociszewska", "397", "175", "88.5", "1", "0.29", "22", "17.14", "4", "0", "0", "6"],
-                        ["Zak Ghalem", "645", "302", "132", "0.75", "0.93", "143", "16.01", "3", "0", "0", "9"],
-                        ["Abir Taha", "467", "350", "24", "1", "0.33", "140", "10.24", "3", "0", "0", "7"],
-                        ["Kaygee Tekigerwa", "94", "0", "0", "0", "0", "0", "0", "3", "0", "0", "5"]
+                        ["Russell Thompson", "465", "406", "104.5", "0.67", "0.44", "4", "11.15", "1", "1", "0", "5"],
+                        ["Ben Tinslay", "794", "196", "371.5", "0.78", "0.22", "41", "10.14", "1", "0", "0", "10"],
+                        ["Linda Dixon", "372", "172", "-90.5", "1", "0.43", "22", "8.20", "2", "0", "0", "10"],
+                        ["Inesa Mockute", "478", "222", "94", "0.88", "0.8", "1", "7.58", "0", "0", "0", "15"],
+                        ["Ben Fofie", "697", "182", "24.5", "1", "0.61", "13", "25.21", "4", "0", "0", "12"],
+                        ["Sophie Chorbachi", "464", "129", "193", "0.6", "0.47", "19", "14.26", "3", "0", "0", "5"],
+                        ["Josh Cann", "441", "356", "-28", "0.67", "0.78", "69", "25.71", "5", "0", "1", "6"],
+                        ["Lisa Nok", "658", "281", "114", "0.89", "0.4", "47", "8.60", "1", "0", "0", "10"],
+                        ["Koye Oludayo", "806", "673", "160", "0.62", "0.34", "24", "19.46", "4", "1", "0", "3"],
+                        ["Shakirat Aliu", "666", "467", "77.5", "0.77", "0.55", "57", "10.47", "2", "0", "0", "12"],
+                        ["Natalie Kociszewska", "436", "349", "88.5", "0.85", "0.55", "22", "13.19", "4", "0", "0", "10"],
+                        ["Zak Ghalem", "798", "482", "132", "0.82", "0.74", "143", "8.99", "3", "0", "0", "13"],
+                        ["Abir Taha", "476", "503", "24", "0.74", "0.29", "140", "7.07", "3", "0", "0", "8"],
+                        ["Kaygee Tekigerwa", "147", "54", "0", "-0.5", "1", "0", "5.19", "0", "0", "0", "12"]
                     ]
                 }
             },
