@@ -964,9 +964,10 @@
                         else if (currentView === 'monthly') score = calculateMonthlyScore(val, colName);
                         else if (currentView === 'quarterly') score = calculateQuarterlyScore(val, colName);
 
-                        if (score === 2 || (score === 4 && (colName === "Phone CHI" || colName === "Email CHI"))) {
+                        const isChi = (colName === "Phone CHI" || colName === "Email CHI");
+                        if ((!isChi && score === 2) || (isChi && score === 4)) {
                             td.classList.add('gold');
-                        } else if (score === 1 || (score === 2 && (colName === "Phone CHI" || colName === "Email CHI"))) {
+                        } else if ((!isChi && score === 1) || (isChi && score === 2)) {
                             td.classList.add('silver');
                         } else if (val === null) {
                             td.textContent = ""; 
